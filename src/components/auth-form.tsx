@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { Activity, ArrowRight, Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -19,6 +19,11 @@ export function AuthForm({ mode }: AuthFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [registeredNotice, setRegisteredNotice] = useState(false);
+
+  useEffect(() => {
+    setRegisteredNotice(mode === "login" && new URLSearchParams(window.location.search).get("registered") === "1");
+  }, [mode]);
 
   const isRegister = mode === "register";
 
@@ -95,7 +100,7 @@ export function AuthForm({ mode }: AuthFormProps) {
               : "Your next step starts with showing up."}
           </p>
 
-          {!isRegister && typeof window !== "undefined" && window.location.search.includes("registered=1") && (
+          {!isRegister && registeredNotice && (
             <div className="auth-success" role="status">Account created. You can sign in now.</div>
           )}
 
