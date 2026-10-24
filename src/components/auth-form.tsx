@@ -88,10 +88,12 @@ export function AuthForm({ mode }: AuthFormProps) {
           <span>psych<span className="brand-dot">.</span></span>
         </div>
         <div className="auth-card">
-          <a className="auth-brand" href="/" aria-label="Psych home">
-            <span className="brand-mark"><Activity size={20} strokeWidth={2.6} /></span>
+          <Link className="auth-brand" href="/" aria-label="Psych home">
+            <span className="brand-mark">
+              <Activity size={20} strokeWidth={2.6} />
+            </span>
             <span>psych<span className="brand-dot">.</span></span>
-          </a>
+          </Link>
           <p className="auth-eyebrow">{isRegister ? "START YOUR JOURNEY" : "WELCOME BACK"}</p>
           <h1>{isRegister ? "Create your account" : "Sign in to Psych"}</h1>
           <p className="auth-description">
