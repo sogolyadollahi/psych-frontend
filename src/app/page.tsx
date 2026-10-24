@@ -1,4 +1,5 @@
 import { AuthGuard } from "@/components/auth-guard";
+import { SignOutButton } from "@/components/sign-out-button";
 import {
   Activity,
   ArrowDownRight,
@@ -64,6 +65,7 @@ export default function DashboardPage() {
           </div>
           <a className="nav-item muted" href="#"><Settings2 size={18} /><span>Settings</span></a>
           <a className="nav-item muted" href="#"><CircleHelp size={18} /><span>Help center</span></a>
+          <SignOutButton />
           <div className="profile-mini">
             <div className="avatar">JD</div>
             <div className="profile-meta"><strong>Jordan Davis</strong><span>Free plan</span></div>
