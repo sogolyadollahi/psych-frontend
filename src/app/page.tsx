@@ -1,3 +1,4 @@
+import { AuthGuard } from "@/components/auth-guard";
 import {
   Activity,
   ArrowDownRight,
@@ -34,6 +35,7 @@ const navItems = [
 
 export default function DashboardPage() {
   return (
+    <AuthGuard>
     <main className="app-shell">
       <aside className="sidebar">
         <a className="brand" href="#" aria-label="Psych home">
@@ -161,5 +163,6 @@ export default function DashboardPage() {
         </div>
       </section>
     </main>
+    </AuthGuard>
   );
 }
