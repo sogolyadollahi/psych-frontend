@@ -45,7 +45,7 @@ The API base URL defaults to `http://localhost:9000/api/v1`, matching the host p
 - Statistics: `GET /statistics`
 - Food scanner: `POST /food-scanner/scan` multipart field `image`; `GET /food-scanner/candidates`; `POST /food-scanner/items`
 
-Authenticated endpoints expect `Authorization: Bearer <access_token>`. The backend currently returns a token in the response body; this starter keeps it in memory rather than localStorage. Refreshing the page will require signing in again until a deliberate session strategy is implemented.
+Authenticated endpoints expect `Authorization: Bearer <access_token>`. The login and registration pages are connected to the backend. The current frontend stores the access token in `sessionStorage` so a session survives a page refresh within the same browser tab, then validates it with `GET /auth/me`. This is an interim MVP strategy: JavaScript can access sessionStorage, so before public production deployment, prefer a backend-supported `HttpOnly`, `Secure`, `SameSite` cookie session or another carefully reviewed token architecture.
 
 ## CORS
 
@@ -53,4 +53,4 @@ The backend's default `CORS_ORIGINS` includes `http://localhost:3000` and `http:
 
 ## Current scope
 
-This is the initial frontend scaffold, not a complete API-connected product yet. The dashboard contains representative layout and sample UI values only; they are not fetched from the API. API client and auth state foundations are included for the next implementation step.
+The dashboard is still a visual prototype: its metric values and activity chart are sample data and are not fetched from the API yet. Login, registration, session restoration, sign-out, and dashboard route protection are implemented. Run `npm run typecheck`, `npm run lint`, and `npm run build` locally before merging or deploying changes.
