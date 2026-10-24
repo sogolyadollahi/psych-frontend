@@ -1,0 +1,56 @@
+# Psych Frontend
+
+A separate Next.js frontend for the [Psych FastAPI backend](https://github.com/sogolyadollahi/psych).
+
+## Stack
+
+- Next.js App Router + React + TypeScript
+- Tailwind CSS v4
+- TanStack Query for server state
+- Lucide React icons
+- Dark charcoal UI with lime accents
+- English as the default interface language
+
+## Requirements
+
+- Node.js 20.9+
+- npm
+- Psych API running locally
+
+## Getting started (PowerShell)
+
+```powershell
+Copy-Item .env.example .env.local
+npm install
+npm run dev
+```
+
+Open http://localhost:3000.
+
+The API base URL defaults to `http://localhost:9000/api/v1`, matching the host port documented in the backend repository's Docker Compose instructions. If you run Uvicorn directly on port 8000, change `NEXT_PUBLIC_API_BASE_URL` to `http://localhost:8000/api/v1`.
+
+## API contract notes from the backend source
+
+- API prefix: `/api/v1`
+- Health check: `GET /health` (outside the `/api/v1` prefix)
+- Registration: `POST /auth/register` with `{ "email": "...", "password": "..." }`
+- Login: `POST /auth/login` with `{ "email": "...", "password": "..." }`; returns `{ "access_token": "...", "token_type": "bearer" }`
+- Current auth user: `GET /auth/me`
+- Current profile: `GET /users/me`
+- Dashboard: `GET /dashboard/today`, `GET /dashboard/summary`
+- Workouts: `/workouts`
+- Meals: `/meals`, including nested meal items and food search/nutrition endpoints
+- Supplements: `/supplements`
+- Progress: `/progress` and `/progress/analytics`
+- Statistics: `GET /statistics`
+- Food scanner: `POST /food-scanner/scan` multipart field `image`; `GET /food-scanner/candidates`; `POST /food-scanner/items`
+
+Authenticated endpoints expect `Authorization: Bearer <access_token>`. The backend currently returns a token in the response body; this starter keeps it in memory rather than localStorage. Refreshing the page will require signing in again until a deliberate session strategy is implemented.
+
+## CORS
+
+The backend's default `CORS_ORIGINS` includes `http://localhost:3000` and `http://127.0.0.1:3000`. For deployment, configure the backend allowlist to the deployed frontend origin.
+
+## Current scope
+
+This is the initial frontend scaffold, not a complete API-connected product yet. The dashboard contains representative layout and sample UI values only; they are not fetched from the API. API client and auth state foundations are included for the next implementation step.
