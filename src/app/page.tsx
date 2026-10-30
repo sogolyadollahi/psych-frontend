@@ -24,10 +24,10 @@ import {
 
 const navItems = [
   { label: "Overview", icon: Activity, active: true },
-  { label: "Workouts", icon: Dumbbell },
-  { label: "Nutrition", icon: Utensils },
-  { label: "Supplements", icon: Leaf },
-  { label: "Progress", icon: Target },
+  { label: "Workouts", icon: Dumbbell, href: "/workouts" },
+  { label: "Nutrition", icon: Utensils, href: "#" },
+  { label: "Supplements", icon: Leaf, href: "#" },
+  { label: "Progress", icon: Target, href: "#" },
 ];
 
 export default function DashboardPage() {
@@ -76,9 +76,10 @@ export default function DashboardPage() {
     day.setDate(day.getDate() - (6 - index));
     return day.toISOString().slice(0, 10);
   });
-  const workoutByDate = new Map(
-    (statistics?.workouts ?? []).map((item) => [item.date, item.duration_minutes])
-  );
+  const workoutByDate = (statistics?.workouts ?? []).reduce((totals, item) => {
+    totals.set(item.date, (totals.get(item.date) ?? 0) + item.duration_minutes);
+    return totals;
+  }, new Map<string, number>());
   const weeklyWorkoutMinutes = weekDays.map((day) => workoutByDate.get(day) ?? 0);
   const activeWorkoutDays = new Set(weekDays.filter((day) => (workoutByDate.get(day) ?? 0) > 0));
   const activeWorkoutDayCount = activeWorkoutDays.size;
@@ -113,8 +114,8 @@ export default function DashboardPage() {
 
         <div className="workspace-label">WORKSPACE</div>
         <nav className="nav-list" aria-label="Main navigation">
-          {navItems.map(({ label, icon: Icon, active }) => (
-            <a className={`nav-item ${active ? "active" : ""}`} href="#" key={label}>
+          {navItems.map(({ label, icon: Icon, active, href }) => (
+            <a className={`nav-item ${active ? "active" : ""}`} href={href ?? "#"} key={label}>
               <Icon size={18} />
               <span>{label}</span>
               {label === "Supplements" && <span className="nav-count">{dashboard?.active_supplements ?? "—"}</span>}
