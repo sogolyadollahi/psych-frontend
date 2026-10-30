@@ -270,3 +270,32 @@ h1 { margin: 0; font-size: clamp(25px, 2.4vw, 34px); letter-spacing: -1.1px; fon
 .workout-delete:hover { background: #3a2420; }
 @media (max-width: 1000px) { .workout-layout { grid-template-columns: 1fr; } }
 @media (max-width: 600px) { .workout-record { grid-template-columns: minmax(0, 1fr) auto; gap: 10px; } .workout-record-meta { text-align: left; } .workout-delete { grid-column: 2; } .workout-form-row { grid-template-columns: 1fr; } }
+
+/* Nutrition page */
+.nutrition-layout { display: grid; grid-template-columns: minmax(270px, .78fr) minmax(0, 1.22fr); gap: 15px; align-items: start; }
+.nutrition-right-column { display: grid; gap: 15px; min-width: 0; }
+.nutrition-meal-list { display: grid; gap: 8px; margin-top: 27px; }
+.nutrition-meal-list > .panel-heading { margin-bottom: 5px; }
+.nutrition-meal-choice, .food-result { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; padding: 12px; border: 1px solid #2c3028; border-radius: 8px; color: var(--text); background: #191c17; text-align: left; cursor: pointer; }
+.nutrition-meal-choice.selected, .food-result.selected { border-color: #7eaa3a; background: #242b1c; }
+.nutrition-meal-choice span:first-child, .food-result span:first-child, .nutrition-item > div { display: grid; gap: 5px; min-width: 0; }
+.nutrition-meal-choice strong, .food-result strong, .nutrition-item strong { font-size: 11px; }
+.nutrition-meal-choice small, .food-result small, .nutrition-quantity small, .nutrition-item small { color: var(--muted); font-size: 10px; }
+.nutrition-search { display: flex; gap: 8px; margin-top: 18px; }
+.nutrition-search input { flex: 1; min-width: 0; min-height: 42px; padding: 0 12px; border: 1px solid #34382f; border-radius: 8px; outline: none; color: var(--text); background: #191c17; font: inherit; font-size: 12px; color-scheme: dark; }
+.nutrition-search input:focus { border-color: #7eaa3a; }
+.food-result { margin-top: 8px; }
+.nutrition-quantity { display: grid; gap: 10px; margin-top: 16px; padding-top: 15px; border-top: 1px solid var(--border); }
+.nutrition-quantity > div:first-child { display: grid; gap: 5px; }
+.nutrition-quantity > label { color: #d2d7ca; font-size: 11px; }
+.nutrition-quantity .nutrition-search { margin-top: 0; }
+.nutrition-preview { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 9px; margin-top: 13px; padding: 13px; border: 1px solid #30372a; border-radius: 9px; background: #1d2318; }
+.nutrition-preview > div { display: grid; gap: 6px; min-width: 0; }
+.nutrition-preview span { color: #9ca590; font-size: 9px; }
+.nutrition-preview strong { font-size: 12px; }
+.nutrition-preview .workout-submit { grid-column: 1 / -1; }
+.nutrition-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 0; border-bottom: 1px solid #292d25; }
+.nutrition-item:last-child { border-bottom: 0; }
+.meal-totals { margin-bottom: 12px; }
+@media (max-width: 1000px) { .nutrition-layout { grid-template-columns: 1fr; } }
+@media (max-width: 600px) { .nutrition-preview { grid-template-columns: repeat(2, minmax(0, 1fr)); } .nutrition-search { flex-wrap: wrap; } .nutrition-search .primary-button { flex: 1; } }
