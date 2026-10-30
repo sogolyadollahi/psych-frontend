@@ -117,7 +117,7 @@ export default function DashboardPage() {
             <a className={`nav-item ${active ? "active" : ""}`} href="#" key={label}>
               <Icon size={18} />
               <span>{label}</span>
-              {label === "Supplements" && <span className="nav-count">3</span>}
+              {label === "Supplements" && <span className="nav-count">{dashboard?.active_supplements ?? "—"}</span>}
             </a>
           ))}
         </nav>
@@ -220,16 +220,16 @@ export default function DashboardPage() {
                   <p className="muted-text">Totals are calculated from your saved meal entries. Daily targets and carbohydrate/fat totals are not provided by the current statistics API.</p>
                 </div>
               )}
-              <button className="secondary-button" onClick={() => { void statisticsQuery.refetch(); void todayQuery.refetch(); }}>Refresh dashboard <span>↻</span></button>
+              <button className="secondary-button" onClick={() => { void statisticsQuery.refetch(); void todayQuery.refetch(); void workoutsQuery.refetch(); void mealsQuery.refetch(); void supplementsQuery.refetch(); }}>Refresh dashboard <span>↻</span></button>
             </article>
           </section>
 
           <section className="content-grid lower-grid">
             <article className="panel schedule-panel">
               <div className="panel-heading"><div><h2>Today&apos;s plan</h2><p>Your records and active supplement reminders</p></div></div>
-              {workoutsQuery.isLoading || mealsQuery.isLoading || supplementsQuery.isLoading ? (
+              {todayQuery.isLoading || workoutsQuery.isLoading || mealsQuery.isLoading || supplementsQuery.isLoading ? (
                 <p className="muted-text" role="status">Loading today&apos;s records…</p>
-              ) : workoutsQuery.isError || mealsQuery.isError || supplementsQuery.isError ? (
+              ) : todayQuery.isError || workoutsQuery.isError || mealsQuery.isError || supplementsQuery.isError ? (
                 <p className="auth-error" role="alert">Could not load today&apos;s plan. Refresh the dashboard to try again.</p>
               ) : (
                 <>
