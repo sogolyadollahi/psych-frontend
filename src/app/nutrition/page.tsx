@@ -144,6 +144,7 @@ export default function NutritionPage() {
             <Link className="nav-item" href="/"><span>◫</span><span>Overview</span></Link>
             <Link className="nav-item" href="/workouts"><span>▤</span><span>Workouts</span></Link>
             <Link className="nav-item active" href="/nutrition"><span>◉</span><span>Nutrition</span></Link>
+            <Link className="nav-item" href="/food-scanner"><span>⌕</span><span>Food Scanner</span></Link>
           </nav>
           <div className="sidebar-bottom"><SignOutButton /></div>
         </aside>
