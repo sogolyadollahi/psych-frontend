@@ -238,3 +238,11 @@ h1 { margin: 0; font-size: clamp(25px, 2.4vw, 34px); letter-spacing: -1.1px; fon
   .auth-mobile-brand { margin-bottom: 30px; }
   .auth-card h1 { font-size: 26px; }
 }
+
+
+.weekly-nutrition { display: grid; gap: 18px; padding: 27px 2px 8px; }
+.weekly-nutrition > div { display: grid; gap: 7px; padding-bottom: 15px; border-bottom: 1px solid #2a2e26; }
+.weekly-nutrition > div > span { color: #969e89; font-size: 10px; }
+.weekly-nutrition > div > strong { font-size: 27px; font-weight: 650; letter-spacing: -.6px; }
+.weekly-nutrition > div > strong small { color: #858c7b; font-size: 11px; font-weight: 400; }
+.weekly-nutrition > p { margin: 0; font-size: 10px; line-height: 1.6; }
