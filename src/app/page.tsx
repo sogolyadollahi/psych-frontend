@@ -8,7 +8,6 @@ import { AuthGuard } from "@/components/auth-guard";
 import { SignOutButton } from "@/components/sign-out-button";
 import {
   Activity,
-  ArrowDownRight,
   ArrowUpRight,
   Bell,
   CalendarDays,
@@ -22,7 +21,6 @@ import {
   Settings2,
   Target,
   Utensils,
-  Weight,
 } from "lucide-react";
 
 const navItems = [
@@ -51,6 +49,7 @@ export default function DashboardPage() {
     [profile?.first_name, profile?.last_name].filter(Boolean).join(" ") ||
     user?.email ||
     "there";
+  const avatarLabel = displayName.slice(0, 2).toUpperCase();
   const stats = [
     { label: "Calories consumed", value: dashboard ? Math.round(dashboard.calories).toLocaleString() : "—", unit: "kcal", meta: "Today", icon: Flame },
     { label: "Protein intake", value: dashboard ? Math.round(dashboard.protein).toString() : "—", unit: "g", meta: "Today", icon: Utensils },
@@ -92,8 +91,8 @@ export default function DashboardPage() {
           <a className="nav-item muted" href="#"><CircleHelp size={18} /><span>Help center</span></a>
           <SignOutButton />
           <div className="profile-mini">
-            <div className="avatar">JD</div>
-            <div className="profile-meta"><strong>Jordan Davis</strong><span>Free plan</span></div>
+            <div className="avatar">{avatarLabel}</div>
+            <div className="profile-meta"><strong>{displayName}</strong><span>Psych account</span></div>
             <ChevronDown size={16} className="profile-chevron" />
           </div>
         </div>
