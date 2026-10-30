@@ -246,3 +246,27 @@ h1 { margin: 0; font-size: clamp(25px, 2.4vw, 34px); letter-spacing: -1.1px; fon
 .weekly-nutrition > div > strong { font-size: 27px; font-weight: 650; letter-spacing: -.6px; }
 .weekly-nutrition > div > strong small { color: #858c7b; font-size: 11px; font-weight: 400; }
 .weekly-nutrition > p { margin: 0; font-size: 10px; line-height: 1.6; }
+
+/* Workouts */
+.workout-stats { margin-bottom: 16px; }
+.workout-layout { display: grid; grid-template-columns: minmax(280px, .8fr) minmax(0, 1.2fr); gap: 15px; align-items: start; }
+.workout-form { display: grid; gap: 10px; margin-top: 22px; }
+.workout-form label { margin-top: 5px; color: #d2d7ca; font-size: 11px; font-weight: 600; }
+.workout-form input { width: 100%; min-width: 0; min-height: 43px; padding: 0 12px; border: 1px solid #34382f; border-radius: 8px; outline: none; color: var(--text); background: #191c17; font: inherit; font-size: 12px; color-scheme: dark; }
+.workout-form input:focus { border-color: #7eaa3a; box-shadow: 0 0 0 3px #b8f34a0c; }
+.workout-form input::placeholder { color: #62695c; }
+.workout-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.workout-form-row > div { display: grid; gap: 10px; min-width: 0; }
+.workout-submit { width: 100%; margin-top: 8px; cursor: pointer; }
+.workout-submit:disabled, .workout-delete:disabled { opacity: .55; cursor: wait; }
+.workout-back-link { width: auto; margin: 0; text-decoration: none; }
+.workout-record { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 15px; padding: 16px 0; border-bottom: 1px solid #292d25; }
+.workout-record:last-child { border-bottom: 0; }
+.workout-record-main { display: grid; gap: 5px; min-width: 0; }
+.workout-record-main strong { overflow: hidden; color: #e3e6dc; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.workout-record-main span, .workout-record-meta { color: #818878; font-size: 10px; }
+.workout-record-meta { display: grid; gap: 5px; text-align: right; white-space: nowrap; }
+.workout-delete { border: 1px solid #563b36; border-radius: 6px; padding: 6px 9px; color: #e5a69d; background: #2b1e1b; font-size: 10px; cursor: pointer; }
+.workout-delete:hover { background: #3a2420; }
+@media (max-width: 1000px) { .workout-layout { grid-template-columns: 1fr; } }
+@media (max-width: 600px) { .workout-record { grid-template-columns: minmax(0, 1fr) auto; gap: 10px; } .workout-record-meta { text-align: left; } .workout-delete { grid-column: 2; } .workout-form-row { grid-template-columns: 1fr; } }
