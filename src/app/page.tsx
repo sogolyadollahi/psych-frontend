@@ -57,6 +57,7 @@ export default function DashboardPage() {
   const statistics = statisticsQuery.data;
   const weekDays = Array.from({ length: 7 }, (_, index) => {
     const day = new Date();
+    day.setHours(12, 0, 0, 0);
     day.setDate(day.getDate() - (6 - index));
     return day.toISOString().slice(0, 10);
   });
@@ -202,7 +203,7 @@ export default function DashboardPage() {
                   <p className="muted-text">Totals are calculated from your saved meal entries. Daily targets and carbohydrate/fat totals are not provided by the current statistics API.</p>
                 </div>
               )}
-              <button className="secondary-button" onClick={() => window.location.reload()}>Refresh dashboard <span>↻</span></button>
+              <button className="secondary-button" onClick={() => { void statisticsQuery.refetch(); void todayQuery.refetch(); }}>Refresh dashboard <span>↻</span></button>
             </article>
           </section>
 
