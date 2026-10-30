@@ -25,7 +25,7 @@ import {
 const navItems = [
   { label: "Overview", icon: Activity, active: true },
   { label: "Workouts", icon: Dumbbell, href: "/workouts" },
-  { label: "Nutrition", icon: Utensils, href: "#" },
+  { label: "Nutrition", icon: Utensils, href: "/nutrition" },
   { label: "Supplements", icon: Leaf, href: "#" },
   { label: "Progress", icon: Target, href: "#" },
 ];
