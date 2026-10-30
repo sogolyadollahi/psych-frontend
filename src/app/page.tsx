@@ -3,12 +3,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/components/auth-provider";
 import { api } from "@/lib/api";
-import type { DashboardToday, UserProfile } from "@/lib/contracts";
+import type { DashboardToday, Statistics, UserProfile } from "@/lib/contracts";
 import { AuthGuard } from "@/components/auth-guard";
 import { SignOutButton } from "@/components/sign-out-button";
 import {
   Activity,
-  ArrowUpRight,
   Bell,
   CalendarDays,
   ChevronDown,
@@ -43,6 +42,11 @@ export default function DashboardPage() {
     queryFn: () => api.get<UserProfile>("/users/me"),
     enabled: Boolean(user),
   });
+  const statisticsQuery = useQuery({
+    queryKey: ["statistics", "weekly"],
+    queryFn: () => api.get<Statistics>("/statistics"),
+    enabled: Boolean(user),
+  });
   const dashboard = todayQuery.data;
   const profile = profileQuery.data;
   const displayName =
@@ -50,6 +54,27 @@ export default function DashboardPage() {
     user?.email ||
     "there";
   const avatarLabel = displayName.slice(0, 2).toUpperCase();
+  const statistics = statisticsQuery.data;
+  const weekDays = Array.from({ length: 7 }, (_, index) => {
+    const day = new Date();
+    day.setDate(day.getDate() - (6 - index));
+    return day.toISOString().slice(0, 10);
+  });
+  const workoutByDate = new Map(
+    (statistics?.workouts ?? []).map((item) => [item.date, item.duration_minutes])
+  );
+  const weeklyWorkoutMinutes = weekDays.map((day) => workoutByDate.get(day) ?? 0);
+  const weeklyWorkoutTotal = weeklyWorkoutMinutes.reduce((sum, value) => sum + value, 0);
+  const chartMax = Math.max(60, ...weeklyWorkoutMinutes);
+  const chartPoints = weeklyWorkoutMinutes.map((value, index) => {
+    const x = (index / 6) * 600;
+    const y = 170 - (value / chartMax) * 145;
+    return `${x},${y}`;
+  });
+  const chartLine = chartPoints.map((point, index) => `${index === 0 ? "M" : "L"} ${point}`).join(" ");
+  const chartArea = chartLine + " L 600,190 L 0,190 Z";
+  const weeklyCalories = (statistics?.nutrition ?? []).reduce((sum, item) => sum + item.calories, 0);
+  const weeklyProtein = (statistics?.nutrition ?? []).reduce((sum, item) => sum + item.protein, 0);
   const stats = [
     { label: "Calories consumed", value: dashboard ? Math.round(dashboard.calories).toLocaleString() : "—", unit: "kcal", meta: "Today", icon: Flame },
     { label: "Protein intake", value: dashboard ? Math.round(dashboard.protein).toString() : "—", unit: "g", meta: "Today", icon: Utensils },
@@ -142,34 +167,42 @@ export default function DashboardPage() {
                 <div><h2>Weekly activity</h2><p>Your movement at a glance</p></div>
                 <button className="select-button">This week <ChevronDown size={15} /></button>
               </div>
-              <div className="chart-summary"><strong>4h 32m</strong><span className="chart-pill"><ArrowUpRight size={13} /> 14.6%</span><span className="muted-text">vs. last week</span></div>
-              <div className="chart-area">
-                <div className="chart-y-labels"><span>5h</span><span>4h</span><span>3h</span><span>2h</span><span>1h</span><span>0</span></div>
-                <div className="chart-plot">
-                  {[0,1,2,3,4,5].map((n) => <div className="chart-gridline" key={n} />)}
-                  <svg viewBox="0 0 600 190" preserveAspectRatio="none" role="img" aria-label="Illustrative weekly activity chart">
-                    <defs><linearGradient id="areaFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor="#b8f34a" stopOpacity=".22" /><stop offset="100%" stopColor="#b8f34a" stopOpacity="0" /></linearGradient></defs>
-                    <path d="M0 146 C35 140 45 110 85 122 S145 150 185 99 S250 116 285 75 S340 102 385 58 S440 84 475 45 S545 78 600 20 L600 190 L0 190 Z" fill="url(#areaFill)" />
-                    <path d="M0 146 C35 140 45 110 85 122 S145 150 185 99 S250 116 285 75 S340 102 385 58 S440 84 475 45 S545 78 600 20" fill="none" stroke="#b8f34a" strokeWidth="3" strokeLinecap="round" />
-                    <circle cx="475" cy="45" r="5" fill="#b8f34a" stroke="#20231c" strokeWidth="3" />
-                  </svg>
-                  <div className="chart-x-labels"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+              <div className="chart-summary"><strong>{Math.floor(weeklyWorkoutTotal / 60)}h {weeklyWorkoutTotal % 60}m</strong><span className="muted-text">total workout time · last 7 days</span></div>
+              {statisticsQuery.isLoading ? (
+                <p className="muted-text" role="status">Loading weekly activity…</p>
+              ) : statisticsQuery.isError ? (
+                <p className="auth-error" role="alert">Could not load weekly activity.</p>
+              ) : (
+                <div className="chart-area">
+                  <div className="chart-y-labels"><span>{Math.ceil(chartMax / 60)}h</span><span>{Math.ceil(chartMax * .75 / 60)}h</span><span>{Math.ceil(chartMax * .5 / 60)}h</span><span>{Math.ceil(chartMax * .25 / 60)}h</span><span>0</span></div>
+                  <div className="chart-plot">
+                    {[0,1,2,3,4].map((n) => <div className="chart-gridline" key={n} />)}
+                    <svg viewBox="0 0 600 190" preserveAspectRatio="none" role="img" aria-label="Workout duration over the last seven days">
+                      <defs><linearGradient id="areaFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor="#b8f34a" stopOpacity=".22" /><stop offset="100%" stopColor="#b8f34a" stopOpacity="0" /></linearGradient></defs>
+                      <path d={chartArea} fill="url(#areaFill)" />
+                      <path d={chartLine} fill="none" stroke="#b8f34a" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    <div className="chart-x-labels">{weekDays.map((day) => <span key={day}>{new Date(day + "T12:00:00").toLocaleDateString(undefined, { weekday: "short" })}</span>)}</div>
+                  </div>
                 </div>
-              </div>
-              <div className="chart-footer"><span><i className="legend-dot" /> Active minutes</span><span className="chart-footnote">Sample dashboard preview · API connection pending</span></div>
+              )}
+              <div className="chart-footer"><span><i className="legend-dot" /> Workout minutes</span><span className="chart-footnote">Source: your logged workouts</span></div>
             </article>
 
             <article className="panel goals-panel">
               <div className="panel-heading"><div><h2>Daily nutrition</h2><p>Fuel your day with intention</p></div><button className="more-button" aria-label="Nutrition options">•••</button></div>
-              <div className="calorie-ring-wrap">
-                <div className="calorie-ring"><div className="ring-center"><span>Calories</span><strong>1,640</strong><small>of 2,200 kcal</small></div></div>
-              </div>
-              <div className="nutrition-legend">
-                <div className="nutrition-row"><span className="nutrition-name"><i className="protein-dot" /> Protein</span><strong>112 <small>/ 140 g</small></strong><div className="nutrition-track"><span className="protein-fill" /></div></div>
-                <div className="nutrition-row"><span className="nutrition-name"><i className="carbs-dot" /> Carbs</span><strong>168 <small>/ 220 g</small></strong><div className="nutrition-track"><span className="carbs-fill" /></div></div>
-                <div className="nutrition-row"><span className="nutrition-name"><i className="fat-dot" /> Fat</span><strong>48 <small>/ 70 g</small></strong><div className="nutrition-track"><span className="fat-fill" /></div></div>
-              </div>
-              <button className="secondary-button">View nutrition details <span>↗</span></button>
+              {statisticsQuery.isLoading ? (
+                <p className="muted-text" role="status">Loading nutrition totals…</p>
+              ) : statisticsQuery.isError ? (
+                <p className="auth-error" role="alert">Could not load nutrition totals.</p>
+              ) : (
+                <div className="weekly-nutrition">
+                  <div><span>Calories · 7 days</span><strong>{Math.round(weeklyCalories).toLocaleString()} <small>kcal</small></strong></div>
+                  <div><span>Protein · 7 days</span><strong>{Math.round(weeklyProtein).toLocaleString()} <small>g</small></strong></div>
+                  <p className="muted-text">Totals are calculated from your saved meal entries. Daily targets and carbohydrate/fat totals are not provided by the current statistics API.</p>
+                </div>
+              )}
+              <button className="secondary-button" onClick={() => window.location.reload()}>Refresh dashboard <span>↻</span></button>
             </article>
           </section>
 
