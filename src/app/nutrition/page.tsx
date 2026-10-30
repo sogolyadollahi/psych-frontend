@@ -34,7 +34,7 @@ export default function NutritionPage() {
     queryFn: () => api.get<Meal[]>("/meals"),
     enabled: Boolean(user),
   });
-  const meals = mealsQuery.data ?? [];
+  const meals = useMemo(() => mealsQuery.data ?? [], [mealsQuery.data]);
   const activeMealId = selectedMealId ?? meals[0]?.id ?? null;
   const detailQuery = useQuery({
     queryKey: ["meals", activeMealId],
