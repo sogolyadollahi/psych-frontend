@@ -116,3 +116,24 @@ export interface Statistics {
     thigh: number | null;
   }>;
 }
+
+export interface MealDetail extends Meal {
+  items: MealItem[];
+  nutrition_totals: { calories: string | number; protein: string | number; carbs: string | number; fat: string | number };
+}
+
+export interface FoodSearchResult {
+  fdc_id: number;
+  description: string;
+  data_type: string | null;
+}
+
+export interface FoodNutrition {
+  fdc_id: number;
+  quantity_grams: string | number;
+  calories: string | number;
+  protein: string | number;
+  carbs: string | number;
+  fat: string | number;
+  source: string;
+}
