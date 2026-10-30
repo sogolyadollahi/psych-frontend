@@ -299,3 +299,18 @@ h1 { margin: 0; font-size: clamp(25px, 2.4vw, 34px); letter-spacing: -1.1px; fon
 .meal-totals { margin-bottom: 12px; }
 @media (max-width: 1000px) { .nutrition-layout { grid-template-columns: 1fr; } }
 @media (max-width: 600px) { .nutrition-preview { grid-template-columns: repeat(2, minmax(0, 1fr)); } .nutrition-search { flex-wrap: wrap; } .nutrition-search .primary-button { flex: 1; } }
+
+
+/* Food scanner */
+.scanner-layout { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 15px; align-items: start; }
+.scanner-layout > .panel { min-width: 0; }
+.scanner-preview { display: block; width: 100%; max-height: 280px; object-fit: contain; border: 1px solid var(--border); border-radius: 9px; background: #11130f; }
+.scanner-note { margin: 16px 0 0; color: #7f8874; font-size: 10px; line-height: 1.7; }
+.scanner-candidates { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--border); }
+.scanner-candidates h3 { margin: 0; font-size: 12px; font-weight: 650; }
+.scanner-selection { display: grid; gap: 5px; padding: 12px; border: 1px solid #3c4930; border-radius: 8px; background: #20271a; }
+.scanner-selection strong { color: #e1e9d7; font-size: 11px; }
+.scanner-selection small { color: #929b86; font-size: 9px; }
+.scanner-confirm-panel { grid-column: 1 / -1; }
+.scanner-layout .workout-form select { width: 100%; min-height: 43px; padding: 0 12px; border: 1px solid #34382f; border-radius: 8px; outline: none; color: var(--text); background: #191c17; font: inherit; font-size: 12px; }
+@media (max-width: 900px) { .scanner-layout { grid-template-columns: minmax(0, 1fr); } .scanner-confirm-panel { grid-column: auto; } }
