@@ -1,3 +1,9 @@
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/components/auth-provider";
+import { api } from "@/lib/api";
+import type { DashboardToday, UserProfile } from "@/lib/contracts";
 import { AuthGuard } from "@/components/auth-guard";
 import { SignOutButton } from "@/components/sign-out-button";
 import {
@@ -19,13 +25,6 @@ import {
   Weight,
 } from "lucide-react";
 
-const stats = [
-  { label: "Calories consumed", value: "1,640", unit: "kcal", change: "+8.2%", positive: true, icon: Flame },
-  { label: "Protein intake", value: "112", unit: "g", change: "+12.4%", positive: true, icon: Utensils },
-  { label: "Workout time", value: "48", unit: "min", change: "On track", positive: true, icon: Dumbbell },
-  { label: "Current weight", value: "72.4", unit: "kg", change: "−0.6 kg", positive: true, icon: Weight },
-];
-
 const navItems = [
   { label: "Overview", icon: Activity, active: true },
   { label: "Workouts", icon: Dumbbell },
@@ -35,6 +34,32 @@ const navItems = [
 ];
 
 export default function DashboardPage() {
+  const { user } = useAuth();
+  const todayQuery = useQuery({
+    queryKey: ["dashboard", "today"],
+    queryFn: () => api.get<DashboardToday>("/dashboard/today"),
+    enabled: Boolean(user),
+  });
+  const profileQuery = useQuery({
+    queryKey: ["users", "me"],
+    queryFn: () => api.get<UserProfile>("/users/me"),
+    enabled: Boolean(user),
+  });
+  const dashboard = todayQuery.data;
+  const profile = profileQuery.data;
+  const displayName =
+    [profile?.first_name, profile?.last_name].filter(Boolean).join(" ") ||
+    user?.email ||
+    "there";
+  const stats = [
+    { label: "Calories consumed", value: dashboard ? Math.round(dashboard.calories).toLocaleString() : "—", unit: "kcal", meta: "Today", icon: Flame },
+    { label: "Protein intake", value: dashboard ? Math.round(dashboard.protein).toString() : "—", unit: "g", meta: "Today", icon: Utensils },
+    { label: "Workout time", value: dashboard ? dashboard.workout_duration_minutes.toString() : "—", unit: "min", meta: "Today", icon: Dumbbell },
+    { label: "Active supplements", value: dashboard ? dashboard.active_supplements.toString() : "—", unit: dashboard ? "/ " + dashboard.total_supplements : "", meta: "Currently active", icon: Leaf },
+  ];
+  const todayLabel = dashboard
+    ? new Date(dashboard.date + "T12:00:00").toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })
+    : "Today";
   return (
     <AuthGuard>
     <main className="app-shell">
@@ -81,7 +106,7 @@ export default function DashboardPage() {
             <button className="icon-button search-button" aria-label="Search"><Search size={18} /></button>
             <button className="icon-button notification-button" aria-label="Notifications"><Bell size={18} /><i /></button>
             <div className="topbar-divider" />
-            <div className="today-label"><CalendarDays size={16} /><span>Today, Oct 24</span></div>
+            <div className="today-label"><CalendarDays size={16} /><span>{todayLabel}</span></div>
           </div>
         </header>
 
@@ -89,22 +114,25 @@ export default function DashboardPage() {
           <section className="welcome-row">
             <div>
               <p className="eyebrow"><span className="status-dot" /> YOUR PERSONAL HEALTH SPACE</p>
-              <h1>Good morning, Jordan <span className="wave">✳</span></h1>
+              <h1>Welcome, {displayName} <span className="wave">✳</span></h1>
               <p className="subheading">Here&apos;s your health snapshot for today. Keep your momentum going.</p>
             </div>
             <button className="primary-button"><Plus size={17} /> Log activity</button>
           </section>
 
+          {todayQuery.isLoading && <p role="status">Loading your dashboard data…</p>}
+          {todayQuery.isError && (
+            <p className="auth-error" role="alert">
+              Could not load dashboard data. {todayQuery.error instanceof Error ? todayQuery.error.message : "Please try again."}
+            </p>
+          )}
           <section className="stats-grid" aria-label="Daily statistics">
-            {stats.map(({ label, value, unit, change, positive, icon: Icon }) => (
+            {stats.map(({ label, value, unit, meta, icon: Icon }) => (
               <article className="stat-card" key={label}>
                 <div className="stat-top"><span className="stat-icon"><Icon size={18} /></span><button className="more-button" aria-label={`More about ${label}`}>•••</button></div>
                 <p className="stat-label">{label}</p>
                 <div className="stat-value-row"><strong>{value}</strong><span>{unit}</span></div>
-                <div className={`stat-change ${positive ? "positive" : ""}`}>
-                  {positive ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
-                  <span>{change}</span><span className="change-context">vs. last week</span>
-                </div>
+                <div className="stat-change"><span className="change-context">{meta}</span></div>
               </article>
             ))}
           </section>
