@@ -65,6 +65,8 @@ export default function DashboardPage() {
     (statistics?.workouts ?? []).map((item) => [item.date, item.duration_minutes])
   );
   const weeklyWorkoutMinutes = weekDays.map((day) => workoutByDate.get(day) ?? 0);
+  const activeWorkoutDays = new Set(weekDays.filter((day) => (workoutByDate.get(day) ?? 0) > 0));
+  const activeWorkoutDayCount = activeWorkoutDays.size;
   const weeklyWorkoutTotal = weeklyWorkoutMinutes.reduce((sum, value) => sum + value, 0);
   const chartMax = Math.max(60, ...weeklyWorkoutMinutes);
   const chartPoints = weeklyWorkoutMinutes.map((value, index) => {
@@ -110,8 +112,8 @@ export default function DashboardPage() {
             <div className="upgrade-icon"><Target size={18} /></div>
             <p className="upgrade-title">Stay consistent</p>
             <p className="upgrade-copy">Small steps. Measurable progress.</p>
-            <div className="mini-progress"><span /></div>
-            <div className="progress-caption"><span>Weekly goal</span><strong>4/5 days</strong></div>
+            <div className="mini-progress"><span style={{ width: `${(activeWorkoutDayCount / 7) * 100}%` }} /></div>
+            <div className="progress-caption"><span>Active days · 7 days</span><strong>{activeWorkoutDayCount}/7</strong></div>
           </div>
           <a className="nav-item muted" href="#"><Settings2 size={18} /><span>Settings</span></a>
           <a className="nav-item muted" href="#"><CircleHelp size={18} /><span>Help center</span></a>
@@ -216,10 +218,13 @@ export default function DashboardPage() {
             </article>
             <article className="panel consistency-panel">
               <div className="panel-heading"><div><h2>Consistency</h2><p>Progress comes from showing up</p></div><span className="streak-icon">✳</span></div>
-              <div className="streak-number">12 <span>day streak</span></div>
-              <div className="streak-copy">You&apos;ve checked in every day for almost two weeks. Keep it going.</div>
-              <div className="week-dots">{["M","T","W","T","F","S","S"].map((day, i) => <div className="week-day" key={`${day}-${i}`}><span>{day}</span><i className={i < 5 ? "checked" : ""}>{i < 5 ? "✓" : ""}</i></div>)}</div>
-              <div className="consistency-footer"><span className="status-dot" /> You&apos;re building a habit</div>
+              <div className="streak-number">{activeWorkoutDayCount} <span>active days · last 7 days</span></div>
+              <div className="streak-copy">Days with at least one recorded workout during the last seven days.</div>
+              <div className="week-dots">{weekDays.map((day) => {
+                const isActive = activeWorkoutDays.has(day);
+                return <div className="week-day" key={day}><span>{new Date(day + "T12:00:00").toLocaleDateString(undefined, { weekday: "short" })}</span><i className={isActive ? "checked" : ""}>{isActive ? "✓" : ""}</i></div>;
+              })}</div>
+              <div className="consistency-footer"><span className="status-dot" /> Based on your logged workouts</div>
             </article>
           </section>
           <footer className="page-footer"><span>PSYCH <span className="brand-dot">/</span> HEALTH & PERFORMANCE</span><span>Designed for consistency, built for progress.</span></footer>
