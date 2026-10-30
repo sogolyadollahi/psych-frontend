@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type FormEvent } from "react";
+import { useMemo, useState, type ChangeEvent, type FormEvent } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { AuthGuard } from "@/components/auth-guard";
@@ -102,12 +102,13 @@ function FoodScannerContent() {
     onError: (e) => setError(e instanceof Error ? e.message : "Could not add scanned food."),
   });
 
-  function chooseFile(event: React.ChangeEvent<HTMLInputElement>) {
+  function chooseFile(event: ChangeEvent<HTMLInputElement>) {
     const nextFile = event.target.files?.[0] ?? null;
     setError("");
     setSelectedDetection("");
     setSelectedCandidate(null);
     setFile(nextFile);
+    scanMutation.reset();
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     setPreviewUrl(nextFile ? URL.createObjectURL(nextFile) : "");
   }
