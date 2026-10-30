@@ -1,5 +1,12 @@
-const API_BASE_URL =
+const configuredApiBaseUrl =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8000";
+
+function normalizeApiBaseUrl(value: string): string {
+  const baseUrl = value.trim().replace(/\/+$/, "").replace(/\/docs$/i, "");
+  return /\/api\/v1$/i.test(baseUrl) ? baseUrl : `${baseUrl}/api/v1`;
+}
+
+const API_BASE_URL = normalizeApiBaseUrl(configuredApiBaseUrl);
 
 let accessToken: string | null = null;
 
@@ -39,7 +46,8 @@ export async function apiRequest<T>(
 
   let response: Response;
   try {
-    response = await fetch(`${API_BASE_URL}${path}`, {
+    const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+    response = await fetch(`${API_BASE_URL}${normalizedPath}`, {
       ...init,
       headers,
       cache: "no-store",
