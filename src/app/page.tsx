@@ -26,6 +26,7 @@ const navItems = [
   { label: "Overview", icon: Activity, active: true },
   { label: "Workouts", icon: Dumbbell, href: "/workouts" },
   { label: "Nutrition", icon: Utensils, href: "/nutrition" },
+  { label: "Food Scanner", icon: Search, href: "/food-scanner" },
   { label: "Supplements", icon: Leaf, href: "#" },
   { label: "Progress", icon: Target, href: "#" },
 ];
