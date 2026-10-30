@@ -191,7 +191,7 @@ export default function DashboardPage() {
             </article>
 
             <article className="panel goals-panel">
-              <div className="panel-heading"><div><h2>Daily nutrition</h2><p>Fuel your day with intention</p></div><button className="more-button" aria-label="Nutrition options">•••</button></div>
+              <div className="panel-heading"><div><h2>Weekly nutrition</h2><p>Your recorded nutrition over the last seven days</p></div><button className="more-button" aria-label="Nutrition options">•••</button></div>
               {statisticsQuery.isLoading ? (
                 <p className="muted-text" role="status">Loading nutrition totals…</p>
               ) : statisticsQuery.isError ? (
