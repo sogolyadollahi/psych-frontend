@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/components/auth-provider";
 import { api } from "@/lib/api";
-import type { DashboardToday, Statistics, UserProfile } from "@/lib/contracts";
+import type { DashboardToday, Meal, Statistics, Supplement, UserProfile, Workout } from "@/lib/contracts";
 import { AuthGuard } from "@/components/auth-guard";
 import { SignOutButton } from "@/components/sign-out-button";
 import {
@@ -45,6 +45,21 @@ export default function DashboardPage() {
   const statisticsQuery = useQuery({
     queryKey: ["statistics", "weekly"],
     queryFn: () => api.get<Statistics>("/statistics"),
+    enabled: Boolean(user),
+  });
+  const workoutsQuery = useQuery({
+    queryKey: ["workouts"],
+    queryFn: () => api.get<Workout[]>("/workouts"),
+    enabled: Boolean(user),
+  });
+  const mealsQuery = useQuery({
+    queryKey: ["meals"],
+    queryFn: () => api.get<Meal[]>("/meals"),
+    enabled: Boolean(user),
+  });
+  const supplementsQuery = useQuery({
+    queryKey: ["supplements"],
+    queryFn: () => api.get<Supplement[]>("/supplements"),
     enabled: Boolean(user),
   });
   const dashboard = todayQuery.data;
@@ -211,10 +226,41 @@ export default function DashboardPage() {
 
           <section className="content-grid lower-grid">
             <article className="panel schedule-panel">
-              <div className="panel-heading"><div><h2>Today&apos;s plan</h2><p>Make the next action count</p></div><button className="text-button">View schedule <span>→</span></button></div>
-              <div className="plan-item"><div className="plan-icon workout"><Dumbbell size={18} /></div><div className="plan-copy"><strong>Upper body strength</strong><span>Workout · 45 min</span></div><span className="plan-time">09:30 AM</span><span className="plan-status done">Completed</span></div>
-              <div className="plan-item"><div className="plan-icon meal"><Utensils size={18} /></div><div className="plan-copy"><strong>Post-workout meal</strong><span>Nutrition · Protein-focused</span></div><span className="plan-time">11:00 AM</span><span className="plan-status upcoming">Upcoming</span></div>
-              <div className="plan-item"><div className="plan-icon supplement"><Leaf size={18} /></div><div className="plan-copy"><strong>Daily supplements</strong><span>Routine · 2 items</span></div><span className="plan-time">01:00 PM</span><span className="plan-status upcoming">Upcoming</span></div>
+              <div className="panel-heading"><div><h2>Today&apos;s plan</h2><p>Your records and active supplement reminders</p></div></div>
+              {workoutsQuery.isLoading || mealsQuery.isLoading || supplementsQuery.isLoading ? (
+                <p className="muted-text" role="status">Loading today&apos;s records…</p>
+              ) : workoutsQuery.isError || mealsQuery.isError || supplementsQuery.isError ? (
+                <p className="auth-error" role="alert">Could not load today&apos;s plan. Refresh the dashboard to try again.</p>
+              ) : (
+                <>
+                  {(workoutsQuery.data ?? []).filter((item) => item.workout_date === dashboard?.date).map((item) => (
+                    <div className="plan-item" key={`workout-${item.id}`}>
+                      <div className="plan-icon workout"><Dumbbell size={18} /></div>
+                      <div className="plan-copy"><strong>{item.muscle_group}</strong><span>Workout · {item.duration_minutes} min</span></div>
+                      <span className="plan-time">Today</span><span className="plan-status done">Logged</span>
+                    </div>
+                  ))}
+                  {(mealsQuery.data ?? []).filter((item) => item.meal_date === dashboard?.date).map((item) => (
+                    <div className="plan-item" key={`meal-${item.id}`}>
+                      <div className="plan-icon meal"><Utensils size={18} /></div>
+                      <div className="plan-copy"><strong>{item.name}</strong><span>Meal · Saved entry</span></div>
+                      <span className="plan-time">Today</span><span className="plan-status done">Logged</span>
+                    </div>
+                  ))}
+                  {(supplementsQuery.data ?? []).filter((item) => item.is_active).map((item) => (
+                    <div className="plan-item" key={`supplement-${item.id}`}>
+                      <div className="plan-icon supplement"><Leaf size={18} /></div>
+                      <div className="plan-copy"><strong>{item.name}</strong><span>Supplement · {item.dosage}</span></div>
+                      <span className="plan-time">{item.reminder_time.slice(0, 5)}</span><span className="plan-status upcoming">Reminder</span>
+                    </div>
+                  ))}
+                  {(workoutsQuery.data ?? []).filter((item) => item.workout_date === dashboard?.date).length === 0 &&
+                    (mealsQuery.data ?? []).filter((item) => item.meal_date === dashboard?.date).length === 0 &&
+                    (supplementsQuery.data ?? []).filter((item) => item.is_active).length === 0 && (
+                      <p className="muted-text">No workouts, meals, or active supplements to show yet.</p>
+                    )}
+                </>
+              )}
             </article>
             <article className="panel consistency-panel">
               <div className="panel-heading"><div><h2>Consistency</h2><p>Progress comes from showing up</p></div><span className="streak-icon">✳</span></div>
